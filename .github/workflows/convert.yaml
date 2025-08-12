@@ -1,0 +1,38 @@
+name: Convert to SRS
+on:
+    schedule:
+        - cron: '0 0 * * *'
+    workflow_dispatch:
+jobs:
+    convert:
+        name: Convert to SRS
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout my repository
+              uses: actions/checkout@v5.0.0
+            - name: Checkout domain-list-community
+              uses: actions/checkout@v5.0.0
+              with:
+                repository: v2fly/domain-list-community
+                path: domain-list-community
+            - name: Setup Rust
+              uses: dtolnay/rust-toolchain@1.87
+            - name: Convert to srs
+              env:
+                DATA_PATH: domain-list-community/data/
+                OUTPUT_PATH: output/
+              run: cargo run
+            - name: Prepare commit message
+              id: meta
+              run: echo "msg=$(date '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_OUTPUT"
+            - name: Push to generate branch
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                publish_branch: generate
+                publish_dir: output
+                force_orphan: true
+                user_name: 'github-actions[bot]'
+                user_email: 'github-actions[bot]@users.noreply.github.com'
+                commit_message: ${{ steps.meta.outputs.msg }}
+

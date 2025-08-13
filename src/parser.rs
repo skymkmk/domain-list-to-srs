@@ -18,7 +18,6 @@ use std::{
     collections::HashMap,
     fs::File,
     io::{BufRead, BufReader},
-    ops::AddAssign,
     path::{Path, PathBuf},
 };
 
@@ -76,7 +75,7 @@ pub fn parse_rules(path: &Path) -> HashMap<String, Rule> {
                     "include" => {
                         let path: PathBuf = path.parent().unwrap_or(Path::new("/")).join(content);
                         for (k, v) in parse_rules(path.as_path()) {
-                            rules.entry(k).or_default().add_assign(v);
+                            *rules.entry(k).or_default() += v;
                         }
                     }
                     "domain" => {

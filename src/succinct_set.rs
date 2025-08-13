@@ -109,17 +109,19 @@ impl SuccinctSet {
 
     pub fn write<T: io::Write>(&self, writer: &mut T) {
         // Why do we need to write a 0 here? Because that asshole n9i defined a `Reserve` field in `succinctSetData`, which is similar to `succinctSet`; It wasted my entire afternoon!
-        writer.write_all(&[0]).unwrap();
+        writer.write_all(0_u8.to_be_bytes().as_ref()).unwrap();
         macro_rules! write_data {
             ($field:ident) => {
-                writer.write_all(&self.$field.len().to_varint()).unwrap();
+                writer
+                    .write_all(self.$field.len().to_varint().as_ref())
+                    .unwrap();
                 writer
                     .write_all(
-                        &self
-                            .$field
+                        self.$field
                             .iter()
                             .flat_map(|v| v.to_be_bytes())
-                            .collect::<Vec<u8>>(),
+                            .collect::<Vec<u8>>()
+                            .as_ref(),
                     )
                     .unwrap();
             };

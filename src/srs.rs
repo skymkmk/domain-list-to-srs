@@ -36,28 +36,34 @@ where
     let mut zwriter = ZlibEncoder::new(writer, Compression::best());
     let varint = 1_usize.to_varint();
     zwriter.write_all(&varint).unwrap();
-    let mut buf: Vec<u8> = Vec::new();
-    buf.push(0);
+    zwriter.write_all(0_u8.to_be_bytes().as_ref()).unwrap();
     if value.domain.len() > 0 || value.domain_suffix.len() > 0 {
-        buf.push(RuleType::Domain as u8);
+        zwriter
+            .write_all((RuleType::Domain as u8).to_be_bytes().as_ref())
+            .unwrap();
         let ss = SuccinctSet::matcher(&value.domain, &value.domain_suffix);
-        ss.write(&mut buf);
+        ss.write(&mut zwriter);
     }
     macro_rules! write_fields {
         ($field:ident, $typ:path) => {
             if value.$field.len() > 0 {
-                buf.push($typ as u8);
-                buf.extend(value.$field.len().to_varint());
+                zwriter
+                    .write_all(($typ as u8).to_be_bytes().as_ref())
+                    .unwrap();
+                zwriter
+                    .write_all(value.$field.len().to_varint().as_ref())
+                    .unwrap();
                 for rule in value.$field.iter() {
-                    buf.extend(rule.len().to_varint());
-                    buf.extend(rule.as_bytes());
+                    zwriter.write_all(rule.len().to_varint().as_ref()).unwrap();
+                    zwriter.write_all(rule.as_bytes()).unwrap();
                 }
             }
         };
     }
     write_fields!(domain_keyword, RuleType::DomainKeyword);
     write_fields!(domain_regex, RuleType::DomainRegex);
-    buf.push(RuleType::DomainFinal as u8);
-    buf.push(0);
-    zwriter.write_all(&buf).unwrap();
+    zwriter
+        .write_all((RuleType::DomainFinal as u8).to_be_bytes().as_ref())
+        .unwrap();
+    zwriter.write_all(0_u8.to_be_bytes().as_ref()).unwrap();
 }

@@ -53,7 +53,7 @@ fn main() {
             };
             file_name.push(".srs");
             let srs_file = File::create(Path::new(&setting.output_path).join(file_name)).unwrap();
-            let mut srs_buffer = BufWriter::new(srs_file);
+            let mut srs_buffer = BufWriter::with_capacity(256 * 1024, srs_file);
             write_srs(&mut srs_buffer, &v);
         }
     }

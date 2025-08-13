@@ -1,6 +1,6 @@
 # Domain List to SRS
 
-This is a converter that transforms [domain-list-community](https://github.com/v2fly/domain-list-community) rules into Sing-Box RuleSet v3 SRS format. It uses my own implementation to generate SRS. When the upstream implementation changes, the RuleSet produced by this converter may become incompatible. No warranty is provided; use at your own risk. A GitHub Action runs automatically every day at 00:00Z, and the artifacts are pushed to the [generate](https://github.com/skymkmk/domain-list-to-srs/tree/generate) branch.
+This is a converter that transforms [domain-list-community](https://github.com/v2fly/domain-list-community) rules into sing-box RuleSet v3 SRS format. It uses my own implementation to generate SRS. When the upstream implementation changes, the RuleSet produced by this converter may become incompatible. No warranty is provided; use at your own risk. A GitHub Action runs automatically every day at 00:00Z, and the artifacts are pushed to the [generate](https://github.com/skymkmk/domain-list-to-srs/tree/generate) branch.
 
 ## Acknowledgments
 

@@ -22,6 +22,8 @@ jobs:
                 DATA_PATH: domain-list-community/data/
                 OUTPUT_PATH: output/
               run: cargo run
+            - name: Copy README
+              run: cp README.md output/
             - name: Copy upstream LICENSE
               run: cp domain-list-community/LICENSE output/
             - name: Prepare commit message

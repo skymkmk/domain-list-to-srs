@@ -80,9 +80,7 @@ impl SuccinctSet {
         }
         set
     }
-}
 
-impl SuccinctSet {
     fn set_bit(bm: &mut Vec<u64>, i: isize, v: isize) {
         while i >> 6 >= bm.len() as isize {
             bm.push(0);

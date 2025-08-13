@@ -34,6 +34,7 @@ jobs:
                 publish_branch: generate
                 publish_dir: output
                 force_orphan: true
+                enable_jekyll: true
                 user_name: 'github-actions[bot]'
                 user_email: 'github-actions[bot]@users.noreply.github.com'
                 commit_message: ${{ steps.meta.outputs.msg }}

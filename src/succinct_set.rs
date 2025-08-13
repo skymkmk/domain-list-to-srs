@@ -28,8 +28,13 @@ pub struct SuccinctSet {
     labels: Vec<u8>,
 }
 
-impl From<&[String]> for SuccinctSet {
-    fn from(value: &[String]) -> Self {
+impl SuccinctSet {
+    fn to_succinct_set<T, U>(value: &T) -> Self
+    where
+        T: AsRef<[U]>,
+        U: AsRef<[u8]>,
+    {
+        let value = value.as_ref();
         let mut set = SuccinctSet::default();
         let mut l_idx = 0;
         #[derive(Clone, Copy)]
@@ -46,7 +51,7 @@ impl From<&[String]> for SuccinctSet {
         let mut i = 0;
         while i < queue.len() {
             let mut elt = queue[i].clone();
-            if elt.col == value[elt.s as usize].len() as i32 {
+            if elt.col == value[elt.s as usize].as_ref().len() as i32 {
                 elt.s += 1;
                 Self::set_bit(&mut set.leaves, i as isize, 1);
             }
@@ -54,8 +59,8 @@ impl From<&[String]> for SuccinctSet {
             while j < elt.e {
                 let frm = j;
                 while j < elt.e
-                    && value[j as usize].as_bytes()[elt.col as usize]
-                        == value[frm as usize].as_bytes()[elt.col as usize]
+                    && value[j as usize].as_ref()[elt.col as usize]
+                        == value[frm as usize].as_ref()[elt.col as usize]
                 {
                     j += 1
                 }
@@ -65,7 +70,7 @@ impl From<&[String]> for SuccinctSet {
                     col: elt.col + 1,
                 });
                 set.labels
-                    .push(value[frm as usize].as_bytes()[elt.col as usize]);
+                    .push(value[frm as usize].as_ref()[elt.col as usize]);
                 Self::set_bit(&mut set.label_bitmap, l_idx, 0);
                 l_idx += 1;
             }
@@ -104,7 +109,7 @@ impl SuccinctSet {
             domain_list.push(domain.chars().rev().collect());
         }
         domain_list.sort();
-        domain_list.as_slice().into()
+        Self::to_succinct_set(&domain_list)
     }
 
     pub fn write<T: io::Write>(&self, writer: &mut T) {
